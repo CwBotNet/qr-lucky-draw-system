@@ -1,5 +1,7 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
+import { luckyDrawHandler, verifyNumberHandler } from "../handlers";
+
 export const runtime = "edge";
 
 const app = new Hono<{
@@ -8,13 +10,14 @@ const app = new Hono<{
   };
 }>().basePath("/api");
 
-app.get("/hello", (c) => {
+app.get("/health-check", async (c) => {
   return c.json({
-    DATABASE_URL_ACCELERATE: process.env.DATABASE_URL_ACCELERATE,
-    DATABASE_URL: process.env.DATABASE_URL,
-    message: "Hello Next.js!",
+    message: "working server!",
   });
 });
+
+app.post("/verify-number", ...verifyNumberHandler);
+app.post("/lucky-draw", ...luckyDrawHandler);
 
 export const GET = handle(app);
 export const POST = handle(app);
